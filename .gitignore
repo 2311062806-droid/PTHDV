@@ -1,0 +1,19 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+target/
+
+# Node
+node_modules/
+dist/
+
+# Logs
+*.log
+
+# Old duplicate project
+course-service/crs-microservices/
+
+# Environment
+.env
