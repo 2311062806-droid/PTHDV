@@ -94,6 +94,23 @@ spring:
               filters:
                 - RewritePath=/api/public/courses, /courses
 
+            # =========================
+            # AUTH SERVICE - API KEY MANAGEMENT (Buoi 10)
+            # =========================
+            - id: auth-service-apikeys-list
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/api-keys
+              filters:
+                - RewritePath=/api/api-keys, /api-keys
+
+            - id: auth-service-apikeys-detail
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/api-keys/**
+              filters:
+                - RewritePath=/api/api-keys/(?<segment>.*), /api-keys/${segment}
+
 # =========================
 # JWT
 # =========================
@@ -103,8 +120,9 @@ jwt:
 # =========================
 # PARTNER API KEY
 # =========================
-partner:
-  api-key: crs-partner-key-2026
+# Khong con dung static key - key duoc quan ly dong trong auth-service (Buoi 10)
+# partner:
+#   api-key: crs-partner-key-2026
 
 # =========================
 # ACTUATOR / GATEWAY

@@ -1,0 +1,30 @@
+package vn.edu.crs.api_gateway.cache;
+
+import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.util.concurrent.ConcurrentHashMap;
+
+// purpose: cache ket qua kiem tra API Key trong bo nho, giam tai cho auth-service.
+// Danh doi: sau khi thu hoi key, co the mat toi 30 giay de Gateway nhan ra (consistency vs performance)
+@Component
+public class ApiKeyValidationCache {
+
+    private static final long TTL_SECONDS = 30;
+
+    private record CacheEntry(boolean valid, Instant expiresAt) {}
+
+    private final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
+
+    public Boolean get(String cacheKey) {
+        CacheEntry entry = cache.get(cacheKey);
+        if (entry == null || Instant.now().isAfter(entry.expiresAt())) {
+            return null; // khong co trong cache hoac da het han
+        }
+        return entry.valid();
+    }
+
+    public void put(String cacheKey, boolean valid) {
+        cache.put(cacheKey, new CacheEntry(valid, Instant.now().plusSeconds(TTL_SECONDS)));
+    }
+}
