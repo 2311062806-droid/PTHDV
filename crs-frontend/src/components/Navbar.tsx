@@ -35,9 +35,14 @@ export default function Navbar() {
 
             {isAuthenticated &&
                 user?.role === "ADMIN" && (
-                    <Link to="/admin/courses">
-                        Quản trị môn học
-                    </Link>
+                    <>
+                        <Link to="/admin/courses">
+                            Quan tri mon hoc
+                        </Link>
+                        <Link to="/admin/api-keys">
+                            Quan ly API Key
+                        </Link>
+                    </>
                 )}
 
             {isAuthenticated &&
