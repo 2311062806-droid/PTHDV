@@ -4,6 +4,7 @@ import vn.edu.crs.registration_service.entity.Registration;
 import vn.edu.crs.registration_service.service.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,17 @@ public class RegistrationController {
     @GetMapping
     public List<Registration> getAll() {
         return registrationService.getAll();
+    }
+
+    // Buổi 9: lấy danh sách đăng ký của sinh viên đang đăng nhập
+    @GetMapping("/my")
+    public List<Registration> getMyRegistrations(
+            Authentication authentication) {
+
+        Long studentId =
+                (Long) authentication.getCredentials();
+
+        return registrationService.getMyRegistrations(studentId);
     }
 
     @GetMapping("/{id}")

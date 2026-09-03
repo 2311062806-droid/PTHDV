@@ -8,8 +8,20 @@ export interface Course {
 
 export interface PagedResponse<T> {
   content: T[];
-  totalElements: number;
   totalPages: number;
-  number: number;
+  totalElements: number;
   size: number;
+  number: number;
 }
+
+export interface CourseFormValues {
+  tenMonHoc: string;
+  soTinChi: string;
+  soChoToiDa: string;
+}
+
+export const emptyCourseForm: CourseFormValues = {
+  tenMonHoc: "",
+  soTinChi: "",
+  soChoToiDa: "",
+};

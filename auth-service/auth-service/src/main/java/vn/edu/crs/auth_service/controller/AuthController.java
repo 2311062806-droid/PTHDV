@@ -51,13 +51,16 @@ public class AuthController {
                     .body("Sai username hoặc password");
         }
 
+        // Buổi 9: thêm userId vào JWT
         String token = jwtService.generateToken(
+                user.getId(),
                 user.getUsername(),
                 user.getRole()
         );
 
         return ResponseEntity.ok(
                 new LoginResponse(
+                        user.getId(),
                         token,
                         user.getUsername(),
                         user.getRole()

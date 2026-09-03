@@ -1,4 +1,4 @@
-package vn.edu.crs.registration_service.security;
+package vn.edu.crs.course_service.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -41,26 +41,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
+
+                // Tạo SecretKey từ chuỗi secret
                 SecretKey key = Keys.hmacShaKeyFor(
                         secret.getBytes(StandardCharsets.UTF_8)
                 );
 
+                // Xác thực JWT bằng JJWT 0.12.6
                 Claims claims = Jwts.parser()
                         .verifyWith(key)
                         .build()
                         .parseSignedClaims(token)
                         .getPayload();
 
+                // Lấy username từ JWT
                 String username = claims.getSubject();
+
+                // Lấy role từ JWT
                 String role = claims.get("role", String.class);
 
-                // Buổi 9: đọc userId từ JWT
-                Long userId = claims.get("userId", Long.class);
-
+                // Tạo Authentication
                 var authToken =
                         new UsernamePasswordAuthenticationToken(
                                 username,
-                                userId,
+                                null,
                                 List.of(
                                         new SimpleGrantedAuthority(
                                                 "ROLE_" + role
@@ -68,15 +72,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                 )
                         );
 
+                // Đưa Authentication vào SecurityContext
                 SecurityContextHolder
                         .getContext()
                         .setAuthentication(authToken);
 
             } catch (Exception e) {
+
+                // JWT sai hoặc hết hạn
                 SecurityContextHolder.clearContext();
             }
         }
 
+        // Cho request đi tiếp tới Spring Security
         filterChain.doFilter(request, response);
     }
 }

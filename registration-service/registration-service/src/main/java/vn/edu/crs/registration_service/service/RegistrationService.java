@@ -31,6 +31,11 @@ public class RegistrationService {
         return registrationRepository.findAll();
     }
 
+    // Buổi 9: lấy danh sách đăng ký của sinh viên đang đăng nhập
+    public List<Registration> getMyRegistrations(Long studentId) {
+        return registrationRepository.findByStudentId(studentId);
+    }
+
     public Registration getById(Long id) {
         return registrationRepository.findById(id)
                 .orElseThrow(() ->
@@ -154,6 +159,4 @@ public class RegistrationService {
 
         registrationRepository.save(existing);
     }
-
-
 }

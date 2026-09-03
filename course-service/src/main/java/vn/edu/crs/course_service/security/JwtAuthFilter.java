@@ -60,11 +60,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // Lấy role từ JWT
                 String role = claims.get("role", String.class);
 
+                // Buổi 9: lấy userId từ JWT
+                Long userId = claims.get("userId", Long.class);
+
                 // Tạo Authentication
+                // credentials = userId
                 var authToken =
                         new UsernamePasswordAuthenticationToken(
                                 username,
-                                null,
+                                userId,
                                 List.of(
                                         new SimpleGrantedAuthority(
                                                 "ROLE_" + role
@@ -77,11 +81,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         .getContext()
                         .setAuthentication(authToken);
 
+                System.out.println("===== JWT SUCCESS =====");
+                System.out.println("Request: "
+                        + request.getMethod()
+                        + " "
+                        + request.getRequestURI());
+                System.out.println("Username: " + username);
+                System.out.println("UserId: " + userId);
+                System.out.println("Role: " + role);
+                System.out.println("Authority: ROLE_" + role);
+
             } catch (Exception e) {
 
-                // JWT sai hoặc hết hạn
+                System.out.println("===== JWT ERROR =====");
+                System.out.println("Request: "
+                        + request.getMethod()
+                        + " "
+                        + request.getRequestURI());
+                System.out.println("Error type: "
+                        + e.getClass().getName());
+                System.out.println("Error message: "
+                        + e.getMessage());
+
                 SecurityContextHolder.clearContext();
             }
+
+        } else {
+
+            System.out.println("===== NO JWT =====");
+            System.out.println("Request: "
+                    + request.getMethod()
+                    + " "
+                    + request.getRequestURI());
         }
 
         // Cho request đi tiếp tới Spring Security

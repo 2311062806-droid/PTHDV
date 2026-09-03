@@ -3,6 +3,7 @@ package vn.edu.crs.auth_service.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -12,34 +13,45 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY =
-            "crs-microservices-secret-key-2026-auth-service";
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private final SecretKey key = Keys.hmacShaKeyFor(
-            SECRET_KEY.getBytes(StandardCharsets.UTF_8)
-    );
+    private SecretKey getKey() {
+        return Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
+    }
 
     private final long expiration = 86400000; // 24 giờ
 
-    public String generateToken(String username, String role) {
+    // Buổi 9: thêm userId vào JWT
+    public String generateToken(Long userId, String username, String role) {
 
         return Jwts.builder()
                 .subject(username)
+                .claim("userId", userId)
                 .claim("role", role)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(key)
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis() + expiration
+                        )
+                )
+                .signWith(getKey())
                 .compact();
     }
 
     public String getUsername(String token) {
-
         return getClaims(token).getSubject();
     }
 
     public String getRole(String token) {
-
         return getClaims(token).get("role", String.class);
+    }
+
+    // Buổi 9: đọc userId từ JWT
+    public Long getUserId(String token) {
+        return getClaims(token).get("userId", Long.class);
     }
 
     public boolean isValidToken(String token) {
@@ -55,7 +67,7 @@ public class JwtService {
     private Claims getClaims(String token) {
 
         return Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
